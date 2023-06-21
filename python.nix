@@ -1,7 +1,10 @@
 { flake-utils, gitignore, devshell }: { nixpkgs, dir }:
 flake-utils.lib.eachDefaultSystem (system:
   let
-    pkgs = import nixpkgs { inherit system; };
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = [ devshell.overlays.default ];
+    };
   in
   with pkgs; rec {
     # here's a good dev shell with all gems compiled

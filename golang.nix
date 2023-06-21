@@ -9,7 +9,7 @@ flake-utils.lib.eachDefaultSystem (system:
   in
   rec {
 
-    devShells.default = pkgs.mkShell
+    devShells.default = pkgs.devshell.mkShell
       {
         commands = [
           {
@@ -38,10 +38,10 @@ flake-utils.lib.eachDefaultSystem (system:
       app = pkgs.buildGoApplication {
         pname = "babashka-pod-docker";
         version = "0.0.1";
-        src = ./.;
-        pwd = ./.;
+        src = dir;
+        pwd = dir;
         CGO_ENABLED = 0;
-        modules = ./gomod2nix.toml;
+        modules = (dir + /gomod2nix.toml);
       };
 
       docker = pkgs.dockerTools.buildImage {

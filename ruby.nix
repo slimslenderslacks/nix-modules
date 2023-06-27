@@ -16,6 +16,16 @@ flake-utils.lib.eachDefaultSystem (system:
         gems
         gems.wrappedRuby
       ];
+      commands = [
+        {
+          name = "update-deps";
+          help = "Update ruby gems";
+          command = ''
+            bundlix
+          '';
+        }
+      ];
+
     };
 
     # this package includes our ruby application with pre-compiled gems
@@ -28,14 +38,14 @@ flake-utils.lib.eachDefaultSystem (system:
       };
       buildInputs = [ gems pkgs.ruby ];
       installPhase = ''
-        mkdir -p $out/{bin,share}
-        cp -r ./*.rb $out/share
-        bin=$out/bin/entrypoint
-        cat > $bin <<EOF
-#!/bin/sh -e
-exec ${gems}/bin/bundle exec ${pkgs.ruby}/bin/ruby $out/share/main.rb "\$@"
-EOF
-        chmod +x $bin
+                mkdir -p $out/{bin,share}
+                cp -r ./*.rb $out/share
+                bin=$out/bin/entrypoint
+                cat > $bin <<EOF
+        #!/bin/sh -e
+        exec ${gems}/bin/bundle exec ${pkgs.ruby}/bin/ruby $out/share/main.rb "\$@"
+        EOF
+                chmod +x $bin
       '';
     };
 

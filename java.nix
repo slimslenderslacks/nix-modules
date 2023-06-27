@@ -1,7 +1,10 @@
-{ flake-utils, gitignore, devshell }: { nixpkgs, dir }:
+{ flake-utils, gitignore, devshell }: { nixpkgs, dir, main-class }:
 flake-utils.lib.eachDefaultSystem (system:
   let
-    pkgs = import nixpkgs { inherit system; };
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = [ devshell.overlays.default ];
+    };
     maven = with pkgs; (buildMaven (dir + /project-info.json));
     src = dir;
   in
@@ -35,6 +38,7 @@ flake-utils.lib.eachDefaultSystem (system:
       installPhase = ''
                     mvn --offline --settings ${maven.settings} package
         	        mkdir -p "$out"/lib
+                    mvn --offline --settings ${maven.settings} dependency:build-classpath -Dmdep.outputFile=$out/lib/classpath.txt
                     mv target/*.jar "$out"/lib
       '';
     };
@@ -42,14 +46,24 @@ flake-utils.lib.eachDefaultSystem (system:
     # default package is an entrypoint to run the jars
     packages.default = pkgs.writeShellScriptBin "entrypoint" ''
       export LD_LIBRARY_PATH=${pkgs.gcc-unwrapped.lib}/lib64
-      ${pkgs.temurin-bin}/bin/java -cp ${packages.jars}/lib/deeplearning4j-example-sample-1.0.0-M2-bin.jar org.deeplearning4j.examples.sample.LeNetMNIST
+
+      ${pkgs.temurin-bin}/bin/java -cp ${packages.jars}/lib/${maven.info.project.artifactId}-${maven.info.project.version}.jar:"$(< ${packages.jars}/lib/classpath.txt)" ${main-class}
     '';
 
-    devShells.default = pkgs.mkShell
+    devShells.default = pkgs.devshell.mkShell
       {
         packages = [
           pkgs.maven
           pkgs.temurin-bin
+        ];
+        commands = [
+          {
+            name = "update-deps";
+            help = "Update maven deps";
+            command = ''
+              nix run .#create-project-info;
+            '';
+          }
         ];
       };
   }

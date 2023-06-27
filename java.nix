@@ -1,11 +1,11 @@
-{ flake-utils, gitignore, devshell }: { nixpkgs, dir, main-class }:
+{ flake-utils, gitignore, devshell }: { nixpkgs, dir, main-class, project-info-map ? system: dir + /project-info.json }:
 flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = import nixpkgs {
       inherit system;
       overlays = [ devshell.overlays.default ];
     };
-    maven = with pkgs; (buildMaven (dir + /project-info.json));
+    maven = with pkgs; (buildMaven (project-info-map system));
     src = dir;
   in
   rec {

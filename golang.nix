@@ -1,4 +1,4 @@
-{ flake-utils, gitignore, devshell, gomod2nix}: { nixpkgs, dir }:
+{ flake-utils, gitignore, devshell, gomod2nix}: { nixpkgs, dir, name, version, custom-packages}:
 flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = import nixpkgs
@@ -34,10 +34,10 @@ flake-utils.lib.eachDefaultSystem (system:
         ];
       };
 
-    packages = rec {
+    packages = custom-packages pkgs rec {
       app = pkgs.buildGoApplication {
-        pname = "babashka-pod-docker";
-        version = "0.0.1";
+        pname = name;
+        version = version;
         src = dir;
         pwd = dir;
         CGO_ENABLED = 0;
@@ -48,21 +48,17 @@ flake-utils.lib.eachDefaultSystem (system:
         name = "docker-pod";
         tag = "latest";
         config = {
-          Cmd = [ "${app}/bin/babashka-pod-docker" ];
+          Cmd = [ "${app}/bin/${name}" ];
         };
       };
 
       default-linux = app.overrideAttrs (old: old // { GOOS = "linux"; GOARCH = "arm64"; });
 
-      default = pkgs.writeShellScriptBin "entrypoint" ''
-        	    ${app}/bin/babashka-pod-docker
-        	  '';
-
       docker-arm64 = pkgs.dockerTools.buildImage {
         name = "docker-pod";
         tag = "latest";
         config = {
-          Cmd = [ "${default-linux}/bin/linux_arm64/babashka-pod-docker" ];
+          Cmd = [ "${default-linux}/bin/linux_arm64/${name}" ];
         };
       };
     };

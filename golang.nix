@@ -34,7 +34,7 @@ flake-utils.lib.eachDefaultSystem (system:
         ];
       };
 
-    packages = custom-packages pkgs rec {
+    packages = package-overay pkgs rec {
       app = pkgs.buildGoApplication {
         pname = name;
         version = version;

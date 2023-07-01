@@ -1,4 +1,4 @@
-{ flake-utils, gitignore, devshell, nix-filter }: { nixpkgs, dir }:
+{ flake-utils, gitignore, devshell, nix-filter }: { nixpkgs, dir, name, version}:
 flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = import nixpkgs { inherit system; };
@@ -30,8 +30,8 @@ flake-utils.lib.eachDefaultSystem (system:
 
     # this package includes our ruby application with pre-compiled gems
     packages.default = pkgs.stdenv.mkDerivation {
-      pname = "linguist";
-      version = "0.1.0";
+      inherit version;
+      pname = name;
       src = nix-filter.lib {
         root = dir;
         include = [ (nix-filter.lib.matchExt "rb") ];

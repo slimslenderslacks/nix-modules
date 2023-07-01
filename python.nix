@@ -1,4 +1,4 @@
-{ flake-utils, gitignore, devshell }: { nixpkgs, dir }:
+{ flake-utils, gitignore, devshell }: { nixpkgs, dir, package-overlay }:
 flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = import nixpkgs {

@@ -1,4 +1,4 @@
-{ flake-utils, gitignore, devshell, gomod2nix}: { nixpkgs, dir, name, version, custom-packages}:
+{ flake-utils, gitignore, devshell, gomod2nix}: { nixpkgs, dir, name, version, package-overlay}:
 flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = import nixpkgs
@@ -34,7 +34,7 @@ flake-utils.lib.eachDefaultSystem (system:
         ];
       };
 
-    packages = package-overay pkgs rec {
+    packages = package-overlay pkgs rec {
       app = pkgs.buildGoApplication {
         pname = name;
         version = version;

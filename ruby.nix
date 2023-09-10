@@ -16,15 +16,15 @@ flake-utils.lib.eachDefaultSystem (system:
       packages = with pkgs; [
         bundix
         openssl
-        gems
-        gems.wrappedRuby
+        #gems
+        #gems.wrappedRuby
       ];
       commands = [
         {
           name = "update-deps";
           help = "Update ruby gems";
           command = ''
-            bundlix
+            bundix
           '';
         }
       ];

@@ -45,8 +45,8 @@ flake-utils.lib.eachDefaultSystem (system:
         cp -r ./*.rb $out/share
         bin=$out/bin/entrypoint
         cat > $bin <<EOF
-          #!${pkgs.bash}/bin/bash -e
-          exec ${gems}/bin/bundle exec ${pkgs.ruby}/bin/ruby $out/share/main.rb "\$@"
+        #!${pkgs.bash}/bin/bash -e
+        exec ${gems}/bin/bundle exec ${pkgs.ruby}/bin/ruby $out/share/main.rb "\$@"
         EOF
         chmod +x $bin
       '';

@@ -30,7 +30,6 @@ flake-utils.lib.eachDefaultSystem (system:
           (clojure.override { jdk = temurin-bin; })
           clojure-lsp
           temurin-bin
-          neovim
         ];
       };
 

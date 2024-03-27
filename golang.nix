@@ -20,12 +20,13 @@ flake-utils.lib.eachDefaultSystem (system:
         ];
 
         packages = with pkgs; [
-          go
+          go_1_21
           gotools
           golangci-lint
           gopls
           gopkgs
           go-outline
+          go-bindata
           gomod2nix.packages.${system}.default
           (clojure.override { jdk = temurin-bin; })
           clojure-lsp
@@ -38,6 +39,7 @@ flake-utils.lib.eachDefaultSystem (system:
         pname = name;
         version = version;
         src = dir;
+        go = pkgs.go_1_21;
         pwd = dir;
         CGO_ENABLED = 0;
         modules = (dir + /gomod2nix.toml);
@@ -51,6 +53,7 @@ flake-utils.lib.eachDefaultSystem (system:
         };
       };
 
+      # next two packages are only for testing an arm build running on an amd host
       default-linux = app.overrideAttrs (old: old // { GOOS = "linux"; GOARCH = "arm64"; });
 
       docker-arm64 = pkgs.dockerTools.buildImage {
